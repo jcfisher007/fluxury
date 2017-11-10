@@ -1,4 +1,4 @@
-/* pure-flux - Copyright 2015 Peter Moresi */
+/* fluxury - Copyright 2015 JC Fisher */
 "use strict";
 
 import Dispatcher from './Dispatcher';

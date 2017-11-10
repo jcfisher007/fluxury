@@ -1,6 +1,6 @@
-# pure-flux
+# fluxury
 
-[![Circle CI](https://circleci.com/gh/PureFlux/pure-flux/tree/master.svg?style=svg)](https://circleci.com/gh/PureFlux/pure-flux/tree/master)
+[![Circle CI](https://circleci.com/gh/formula/fluxury/tree/master.svg?style=svg)](https://circleci.com/gh/formula/fluxury/tree/master)
 
 ## Overview
 
@@ -18,12 +18,10 @@ This library includes:
   - replaceState( state )
   - subscribe( cb )
 
-For react bindings see [react-pure-flux](https://github.com/WebsiteHQ/react-pure-flux).
-
 ## Quick start
 
 ```sh
-npm install --save pure-flux
+npm install --save fluxury
 ```
 
 ```js
@@ -37,7 +35,7 @@ import {
   replaceState,
   subscribe
 }
-from 'pure-flux'
+from 'fluxury'
 ```
 
 ## Polyfills
@@ -60,7 +58,7 @@ require('core-js/fn/object/keys');
 Dispatch action, return promise.
 
 ```js
-var { dispatch } = require( 'pure-flux' )
+var { dispatch } = require( 'fluxury' )
 
 // With an object
 dispatch( { type: 'openPath', '/user/new' } )
@@ -80,7 +78,7 @@ A store responds to actions by returning the next state.
 
 ```js
 const inc = 'inc'
-import {createStore} from 'pure-flux';
+import {createStore} from 'fluxury';
 
 // a simple counting store
 var store = createStore( "CountStoreWithReducer", (state=0, action) => {
@@ -107,7 +105,7 @@ Optionally, you may define a store with a specification.
 
 ```js
 const inc = 'inc'
-import { createStore } from 'pure-flux';
+import { createStore } from 'fluxury';
 
 // a simple counting store
 var countStore = createStore( "CountStoreWithSpec", {
