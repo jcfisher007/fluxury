@@ -169,9 +169,3 @@ unsubscribe()
 ### getReducer( )
 
 Return app's reducer function, use with Redux.
-
-## Final thought
-
-If you got this far then I hope you enjoy this library and build something amazing.
-
-If you do please let me know!
