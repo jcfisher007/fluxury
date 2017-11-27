@@ -4,12 +4,11 @@
 
 ## Overview
 
-A Flux library that promotes that `(state, action) => state` pattern.
+A state management library for JavaScript applications.
 
-This library includes:
+Library includes:
 
   - createStore( name, reducerOrSpec, actionsOrSelectors )
-  - composeStore( name, ...spec )
   - dispatch( action )
   - getStores( )
   - getReducer( )
@@ -53,25 +52,6 @@ require('core-js/fn/object/keys');
 
 ## API
 
-### dispatch( action )
-
-Dispatch action, return promise.
-
-```js
-var { dispatch } = require( 'fluxury' )
-
-// With an object
-dispatch( { type: 'openPath', '/user/new' } )
-.then( action => console.log('Going', action.data) )
-
-// With a Promise
-dispatch( Promise.resolve({ type: 'get', mode: 'off the juice' }) )
-
-// With type and data
-dispatch( 'loadSettings', { a: 1, b: 2 } )
-
-```
-
 ### createStore( name, reducerOrSpec, actionsOrSelectors )
 
 A store responds to actions by returning the next state.
@@ -109,8 +89,11 @@ import { createStore } from 'fluxury';
 
 // a simple counting store
 var countStore = createStore( "CountStoreWithSpec", {
+  // life-cycle method for initialization.
   getInitialState: () => 0,
+  // handles { type: 'inc' }
   inc: (state) => state+1,
+  // handles { type: 'incN' }
   incN: (state, n) => state+n,
 })
 
@@ -119,13 +102,31 @@ countStore.inc()
 countStore.incN(10)
 ```
 
-The specification includes the life-cycle method `getInitialState` which is invoked once when the store is created.
+### dispatch( action )
 
-Additional functions are invoked when the `action.type` matches the key in the spec.
+The entry point to effecting state changes in the app is when an action is dispatch. 
 
-_Do not try to mutate the state object. It is frozen._
+Dispatch accepts action as object, promise, or type/data; returns promise.
+
+```js
+// Import the dispatch function.
+var { dispatch } = require( 'fluxury' )
+
+// Dispatch action as object
+dispatch( { type: 'openPath', '/user/new' } )
+.then( action => console.log('Going', action.data) )
+
+// Dispatch action as promise
+dispatch( Promise.resolve({ type: 'get', mode: 'off the juice' }) )
+
+// Dispatch action with type:string and data:object.
+dispatch( 'loadSettings', { a: 1, b: 2 } )
+
+```
 
 #### Store Properties
+
+Here is a list of store properties that are part of the public API.
 
 | name | comment |
 |---------|------|
@@ -136,40 +137,6 @@ _Do not try to mutate the state object. It is frozen._
 | getState | A function to access state |
 | setState | Replace the store's state |
 | replaceReducer | Replace the store's reducer |
-
-### composeStore( name, ...spec )
-
-Compose two or more stores into composite store with a specification.
-
-#### Object specification
-```js
-// object spec
-composeStores(
-  "MyCombinedObjectStore", {
-    count: CountStore,
-    messages: MessageStore
-  }
-)
-
-// Returns state as object:
-// {
-//   count: {CountStore.getState()},
-//   messages: {MessageStore.getState()}
-// }
-```
-
-#### Array specification
-
-```js
-// list spec
-composeStores( "MyCombinedListStore", CountStore, MessageStore )
-
-// Returns state as array:
-// [
-//   {CountStore.getState()},
-//   {MessageStore.getState()}
-// ]
-```
 
 ### getStores( )
 
@@ -201,7 +168,7 @@ unsubscribe()
 ```
 ### getReducer( )
 
-Return the reducer function, use with Redux.
+Return app's reducer function, use with Redux.
 
 ## Final thought
 
