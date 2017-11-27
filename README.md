@@ -9,7 +9,6 @@ A state management library for JavaScript applications.
 Library includes:
 
   - createStore( name, reducerOrSpec, actionsOrSelectors )
-  - composeStore( name, ...spec )
   - dispatch( action )
   - getStores( )
   - getReducer( )
