@@ -41,20 +41,17 @@ let storeA = createStore('a', (state=0, action) =>
                       action.data : state )
 
 let storeB = createStore('b', (state=0, action) => 
-                      action.type === 'setA' ? 
+                      action.type === 'setB' ? 
                       action.data : state )
 
 // Store with dependencies on state in storeA and storeB.
-let storeC = createStore('c', (state=1, action, waitFor) => {
+let storeC = createStore('c', (state=0, action, waitFor) => {
   // Ensure storeA and storeB reducers run prior to continuing.
   waitFor([storeA.dispatchToken, storeB.dispatchToken]);
   
-  // Exit unless 'set' is part of the action's type.
-  if (action.type.indexOf('set') === -1) return state;
-  
   // Side effect! Get state from other stores.
   return storeA.getState() + storeB.getState();
-}
+})
 
 rootStore.subscribe((...args) => console.log('action', ...args))
 rootStore.dispatch('setA', 2)
