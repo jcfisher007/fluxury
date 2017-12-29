@@ -6,7 +6,7 @@
 
 State management library, works like redux but with side effects (e.g. waitFor).
 
-This library includes:
+Library includes:
 
   - createStore(name, reducerOrSpec, actionsOrSelectors)
   - dispatch(action)
@@ -76,25 +76,6 @@ require('core-js/fn/object/keys');
 
 ## API
 
-### dispatch( action )
-
-Dispatch action, return promise.
-
-```js
-var { dispatch } = require( 'fluxury' )
-
-// With an object
-dispatch( { type: 'openPath', '/user/new' } )
-.then( action => console.log('Going', action.data) )
-
-// With a Promise
-dispatch( Promise.resolve({ type: 'get', mode: 'off the juice' }) )
-
-// With type and data
-dispatch( 'loadSettings', { a: 1, b: 2 } )
-
-```
-
 ### createStore( name, reducerOrSpec, actionsOrSelectors )
 
 A store responds to actions by returning the next state.
@@ -132,8 +113,11 @@ import { createStore } from 'fluxury';
 
 // a simple counting store
 var countStore = createStore( "CountStoreWithSpec", {
+  // life-cycle method for initialization.
   getInitialState: () => 0,
+  // handles { type: 'inc' }
   inc: (state) => state+1,
+  // handles { type: 'incN' }
   incN: (state, n) => state+n,
 })
 
@@ -142,13 +126,31 @@ countStore.inc()
 countStore.incN(10)
 ```
 
-The specification includes the life-cycle method `getInitialState` which is invoked once when the store is created.
+### dispatch( action )
 
-Additional functions are invoked when the `action.type` matches the key in the spec.
+The entry point to effecting state changes in the app is when an action is dispatch. 
 
-_Do not try to mutate the state object. It is frozen._
+Dispatch accepts action as object, promise, or type/data; returns promise.
+
+```js
+// Import the dispatch function.
+var { dispatch } = require( 'fluxury' )
+
+// Dispatch action as object
+dispatch( { type: 'openPath', '/user/new' } )
+.then( action => console.log('Going', action.data) )
+
+// Dispatch action as promise
+dispatch( Promise.resolve({ type: 'get', mode: 'off the juice' }) )
+
+// Dispatch action with type:string and data:object.
+dispatch( 'loadSettings', { a: 1, b: 2 } )
+
+```
 
 #### Store Properties
+
+Here is a list of store properties that are part of the public API.
 
 | name | comment |
 |---------|------|
@@ -190,10 +192,4 @@ unsubscribe()
 ```
 ### getReducer( )
 
-Return the reducer function, use with Redux.
-
-## Final thought
-
-If you got this far then I hope you enjoy this library and build something amazing.
-
-If you do please let me know!
+Return app's reducer function, use with Redux.
