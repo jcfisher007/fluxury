@@ -56,6 +56,7 @@ let storeC = createStore('c', (state=1, action, waitFor) => {
   return storeA.getState() + storeB.getState();
 }
 
+rootStore.subscribe((...args) => console.log('action', ...args))
 rootStore.dispatch('setA', 2)
 rootStore.dispatch('setB', 2)
 rootStore.getState()  // -> { a: 2, b: 2, c: 4 }
