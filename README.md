@@ -4,19 +4,18 @@
 
 ## Overview
 
-A Flux library that promotes that `(state, action) => state` pattern.
+State management library, works like redux but with side effects (e.g. waitFor).
 
 This library includes:
 
-  - createStore( name, reducerOrSpec, actionsOrSelectors )
-  - composeStore( name, ...spec )
-  - dispatch( action )
-  - getStores( )
-  - getReducer( )
-  - getState( )
-  - promiseAction( type, data )
-  - replaceState( state )
-  - subscribe( cb )
+  - createStore(name, reducerOrSpec, actionsOrSelectors)
+  - dispatch(action)
+  - getStores()
+  - getReducer()
+  - getState()
+  - promiseAction(type, data)
+  - replaceState(state)
+  - subscribe(cb)
 
 ## Quick start
 
@@ -25,9 +24,8 @@ npm install --save fluxury
 ```
 
 ```js
-import {
+import rootStore, {
   createStore,
-  composeStore,
   dispatch,
   getStores,
   getState,
@@ -36,6 +34,31 @@ import {
   subscribe
 }
 from 'fluxury'
+
+// creates a key="A" in the root store, connected to a reducer function.
+let storeA = createStore('a', (state=0, action) => 
+                      action.type === 'setA' ? 
+                      action.data : state )
+
+let storeB = createStore('b', (state=0, action) => 
+                      action.type === 'setA' ? 
+                      action.data : state )
+
+// Store with dependencies on state in storeA and storeB.
+let storeC = createStore('c', (state=1, action, waitFor) => {
+  // Ensure storeA and storeB reducers run prior to continuing.
+  waitFor([storeA.dispatchToken, storeB.dispatchToken]);
+  
+  // Exit unless 'set' is part of the action's type.
+  if (action.type.indexOf('set') === -1) return state;
+  
+  // Side effect! Get state from other stores.
+  return storeA.getState() + storeB.getState();
+}
+
+rootStore.dispatch('setA', 2)
+rootStore.dispatch('setB', 2)
+rootStore.getState()  // -> { a: 2, b: 2, c: 4 }
 ```
 
 ## Polyfills
@@ -136,40 +159,6 @@ _Do not try to mutate the state object. It is frozen._
 | getState | A function to access state |
 | setState | Replace the store's state |
 | replaceReducer | Replace the store's reducer |
-
-### composeStore( name, ...spec )
-
-Compose two or more stores into composite store with a specification.
-
-#### Object specification
-```js
-// object spec
-composeStores(
-  "MyCombinedObjectStore", {
-    count: CountStore,
-    messages: MessageStore
-  }
-)
-
-// Returns state as object:
-// {
-//   count: {CountStore.getState()},
-//   messages: {MessageStore.getState()}
-// }
-```
-
-#### Array specification
-
-```js
-// list spec
-composeStores( "MyCombinedListStore", CountStore, MessageStore )
-
-// Returns state as array:
-// [
-//   {CountStore.getState()},
-//   {MessageStore.getState()}
-// ]
-```
 
 ### getStores( )
 

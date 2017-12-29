@@ -96,12 +96,6 @@ export function dispatch(action, data) {
   }
 }
 
-function toPromise(type, ...data) {
-  return data.length === 1 ?
-  Promise.resolve({ type, data: data[0] }) :
-  Promise.resolve({ type, data })
-}
-
 // construct a reducer method with a spec
 function makeReducer(spec) {
 
@@ -117,7 +111,6 @@ function makeReducer(spec) {
 
   })
 }
-
 
 function bindSelectors(name, selectors) {
   return Object.keys(selectors).reduce(function(a, b, i) {
@@ -236,66 +229,12 @@ export function createStore(name, reducerOrSpec, selectors={}) {
 
 }
 
-// Compose
-export function composeStore(name, ...spec) {
 
-  function isMappedObject(...spec) {
-    return (spec.length === 1 &&
-      typeof spec[0] === 'object' &&
-      typeof spec[0].getState === 'undefined')
-  }
+let rootStore = {
+    dispatch,
+    replaceState,
+    subscribe,
+    getState
+};
 
-  function getState(isMapped, ...spec) {
-
-    if (isMappedObject(...spec)) {
-      return Object.keys(spec[0]).reduce((acc, key) => {
-        acc[key] = spec[0][key].getState()
-        return acc;
-      }, {})
-    }
-
-    return spec.map(n => n.getState())
-  }
-
-  function getStores(isMapped, ...spec) {
-    if (isMapped) {
-        return Object.keys(spec[0]).reduce((acc, key) => acc.concat(spec[0][key]), [])
-    } else {
-      spec.forEach( store => {
-        if (typeof store.getState !== 'function') {
-          if (console && console.log) {
-            console.log('ERROR: invalid store')
-          }
-        }
-      })
-      return spec
-    }
-  }
-
-  let isMapped = isMappedObject(...spec)
-  let defaultState = getState(isMapped, ...spec)
-  let stores = getStores(isMapped, ...spec)
-  let dirty = false;
-
-  let dispatchTokens = stores.map(n => n.dispatchToken )
-  let subscriptions = stores.map(n => n.subscribe( (name, action) => {
-    dirty = true
-  }))
-
-  return createStore(
-    name,
-    (state=defaultState, action, waitFor) => {
-
-      waitFor(dispatchTokens)
-
-      if (dirty) {
-        let newState = getState(isMapped, ...spec)
-        dirty = false;
-        return newState
-      }
-
-      return state;
-
-    }
-  )
-}
+export default rootStore;

@@ -2,18 +2,18 @@ var test = require('tape-async');
 var pf = require('./src/index')
 var getState = pf.getState
 var getStores = pf.getStores
-var composeStore = pf.composeStore
 var createStore = pf.createStore
 var dispatch = pf.dispatch
 var replaceState = pf.replaceState
 var subscribe = pf.subscribe
 
-
+import rootStore from './src/index'
 
 test( 'Basic Tests', function* (t) {
-  t.plan(19)
+  t.plan(20)
 
   t.equal(typeof pf, 'object')
+  t.equal(typeof rootStore, 'object')
   t.equal(typeof pf.createStore, 'function')
   t.equal(typeof pf.dispatch, 'function')
 
@@ -47,7 +47,7 @@ test( 'Basic Tests', function* (t) {
   t.deepEqual(store.getState(), { foo: 1, bar: 2 })
   t.equal(store.getFoo(), 1)
   t.equal(store.getBar(), 2)
-  pf.dispatch(set, { foo: 2 })
+  rootStore.dispatch(set, { foo: 2 })
   t.deepEqual(store.getState(), { foo: 2, bar: 2 })
   pf.dispatch(set, { hey: ['ho', 'let\'s', 'go'] })
   t.deepEqual(store.getState(), { foo: 2, bar: 2, hey: ['ho', 'let\'s', 'go'] })
@@ -168,11 +168,11 @@ test('ImmutableMapStoreWithObjectSpec', function(t) {
 
 })
 
-test('waitFor, compose and events works correctly', function* (t) {
+test('waitFor and events works correctly', function* (t) {
 
   var dispatchCount = 0, dispatchCount2 = 0;
 
-  t.plan(21) // blackjack!
+  t.plan(18)
 
   var MessageStore = createStore("test4MessageStore", function(state=[], action) {
     switch(action.type) {
@@ -196,14 +196,6 @@ test('waitFor, compose and events works correctly', function* (t) {
       }
     }
   )
-
-  var Combined1 = composeStore("Combined1", MessageCountStore, MessageStore)
-  var Combined2 = composeStore("Combined2", [MessageCountStore, MessageStore])
-
-  var Combined3 = composeStore("Combined3", {
-    count: MessageCountStore,
-    messages: MessageStore
-  })
 
   var unsubscribe = MessageStore.subscribe(function() {
     dispatchCount += 1
@@ -245,51 +237,24 @@ test('waitFor, compose and events works correctly', function* (t) {
   t.equals(MessageCountStore.getState(), 3)
   t.deepEqual(MessageStore.getState(), ['Test', 'Test2', 'Test3'])
 
-  t.deepEqual(Combined1.getState(), [3, ['Test', 'Test2', 'Test3']])
-  t.deepEqual(Combined2.getState(), [3, ['Test', 'Test2', 'Test3']])
-  t.deepEqual(Combined3.getState(), { count: 3, messages: ['Test', 'Test2', 'Test3'] })
-
   t.equal(dispatchCount, 2)
   t.equal(dispatchCount2, 1)
 
 })
 
-test('check root store', function(t) {
+test('check root store', function *(t) {
 
-  let rootStateCount = 0;
-  let rootStateCount2 = 0;
-
-  // don't count calls where action is undefined (e.g. createStore)
-  var rootSubscription = subscribe( (state, action) => action ? rootStateCount++ : rootStateCount )
-  // count calls
-  var rootSubscription2 = subscribe( (state, action) => rootStateCount2++ )
-
-  t.plan(15)
-
-  var rootStore = composeStore("master", getStores())
-  var rootState = getState()
-  t.equal(Object.keys(rootStore.getState()).length, 9)
-  t.equal(Object.keys(rootState).length, 10)
-
-  var rootStore2 = composeStore("master2", getStores())
-  t.equal(Object.keys(rootStore2.getState()).length, 10)
-
-  // second time should include itself
-  rootStore2 = composeStore("master2", getStores())
-  t.equal(Object.keys(rootStore2.getState()).length, 11)
-
-  // third and more makes no difference
-  rootStore2 = composeStore("master2", getStores())
-  t.equal(Object.keys(rootStore2.getState()).length, 11)
+  t.plan(10)
 
   var count = 0;
 
-  var rootListener = rootStore2.subscribe(() => count++)
+  var rootListener = rootStore.subscribe(() => count++)
   dispatch('no-action-here', 'Test3')
 
   t.equal(count, 0)
 
-  dispatch('loadMessage', 'Test3')
+  yield dispatch('no-handler-action-here', 'Test3')
+  yield dispatch('loadMessage', 'Test3')
 
   t.equal(count, 1)
 
@@ -299,33 +264,34 @@ test('check root store', function(t) {
 
   replaceState(modifiedState)
 
-  rootState = getState()
+  let rootState = getState()
   t.equal(Object.keys(rootState).length, Object.keys(modifiedState).length)
 
-  dispatch('no-action-here', 'Test3')
-  dispatch('no-action-here', 'Test3')
-  dispatch('no-action-here', 'Test3')
-  t.equal( rootStateCount, 2)
-  dispatch('loadMessage', 'Test3')
-  t.equal( rootStateCount, 3)
-  dispatch('loadMessage', 'Test3')
-  t.equal( rootStateCount, 4)
+  yield dispatch('no-handler-action-here', 'Test3')
+  yield dispatch('no-handler-action-here', 'Test3')
+  yield dispatch('loadMessage', 'Test3')
+  t.equal( count, 3)
+  yield dispatch('loadMessage', 'Test3')
+  t.equal( count, 4)
+  yield dispatch('loadMessage', 'Test3')
+  t.equal( count, 5)
 
-  rootSubscription()
 
   var last;
   var subscribe3 = subscribe( (state, action) => { last = { state, action }} )
 
-  dispatch('loadMessage', 'Test3')
+  yield dispatch('loadMessage', 'Test3')
 
-  // count should not increment
-  t.equal( rootStateCount, 4)
+  t.equal( count, 6)
 
-  // plus 4 call to composeStore and 1 extra dispatch
-  t.equal( rootStateCount2, 9)
+  t.deepEqual( last, {
+    state: { test1CountStore: 0, test2MessageCountStore: 0, test4MessageStore: [ 'Test3', 'Test3', 'Test3', 'Test3' ], test4MessageCountStore: 4 },
+    action: { type: 'loadMessage', data: 'Test3'}
+  })
+
 
   // verify that state and action are passed to listener
-  t.equal(Object.keys(last.state).length, 11)
+  t.equal(Object.keys(last.state).length, 4)
   t.equal(last.action.type, 'loadMessage')
 
 })
