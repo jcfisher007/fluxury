@@ -1,6 +1,6 @@
 # fluxury
 
-[![Circle CI](https://circleci.com/gh/formula/fluxury/tree/master.svg?style=svg)](https://circleci.com/gh/formula/fluxury/tree/master)
+[![Circle CI](https://circleci.com/gh/FormBucket/fluxury/tree/master.svg?style=svg)](https://circleci.com/gh/formula/FormBucket/tree/master)
 
 ## Overview
 
