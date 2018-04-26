@@ -63,7 +63,7 @@ rootStore.getState()  // -> { a: 2, b: 2, c: 4 }
 
 This library depends on a modern JavaScript runtime. Load a polyfill like in [core-js](https://github.com/zloirock/core-js#commonjs) or [babel-polyfill](http://babeljs.io/docs/usage/polyfill/) to support old browsers.
 
-Install required polyfills with [core-js](https://github.com/zloirock/core-js):
+Manually install required polyfills with [core-js](https://github.com/zloirock/core-js):
 
 ```js
 require('core-js/fn/promise');
