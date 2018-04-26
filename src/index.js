@@ -1,7 +1,78 @@
 /* xander - Copyright 2015-2018 FormBucket.com */
 "use strict";
 
-import Dispatcher from "./Dispatcher";
+// Based on Facebook's Flux dispatcher class.
+function Dispatcher() {
+  let lastId = 1;
+  let prefix = "ID_";
+  let callbacks = {};
+  let isPending = {};
+  let isHandled = {};
+  let isDispatching = false;
+  let pendingPayload = null;
+
+  function invokeCallback(id) {
+    isPending[id] = true;
+    callbacks[id](pendingPayload);
+    isHandled[id] = true;
+  }
+
+  this.register = callback => {
+    let id = prefix + lastId++;
+    callbacks[id] = callback;
+    return id;
+  };
+
+  this.unregister = id => {
+    if (!callbacks.hasOwnProperty(id))
+      return new Error("Cannot unregister unknown ID!");
+    delete callbacks[id];
+    return id;
+  };
+
+  this.waitFor = ids => {
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[id];
+      if (isPending[id]) {
+        return new Error("Circular dependency waiting for " + id);
+      }
+
+      if (!callbacks[id]) {
+        return new Error(`waitFor: ${id} is not a registered callback.`);
+      }
+
+      invokeCallback(id);
+    }
+
+    return undefined;
+  };
+
+  this.dispatch = payload => {
+    if (isDispatching) return new Error("Cannot dispatch while dispatching.");
+
+    // start
+    for (var id in callbacks) {
+      isPending[id] = false;
+      isHandled[id] = false;
+    }
+
+    pendingPayload = payload;
+    isDispatching = true;
+
+    // run each callback.
+    try {
+      for (var id in callbacks) {
+        if (isPending[id]) continue;
+        invokeCallback(id);
+      }
+    } finally {
+      pendingPayload = null;
+      isDispatching = false;
+    }
+
+    return payload;
+  };
+}
 
 let rootState = Object.freeze({}),
   stores = {},
@@ -78,7 +149,7 @@ export function dispatch(action, data) {
     // keep a reference to current rootState
     let currentState = rootState;
 
-    // dispatch the action to the stores
+    // dispatch the action to the core dispatcher.
     dispatcher.dispatch(action);
 
     // notify if root state changes!
