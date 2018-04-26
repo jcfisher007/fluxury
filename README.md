@@ -4,7 +4,7 @@
 
 ## Overview
 
-State management library, works like redux but with side effects (e.g. waitFor).
+State management library, works like redux but with option for many stores and, as needed, side effects, Promise support and other practical things.
 
 Library includes:
 
