@@ -1,6 +1,6 @@
 # xander
 
-[![Circle CI](https://circleci.com/gh/FormBucket/xander/tree/master.svg?style=svg)](https://circleci.com/gh/formula/xander/tree/master)
+[![Circle CI](https://circleci.com/gh/FormBucket/xander/tree/master.svg?style=svg)](https://circleci.com/gh/FormBucket/xander/tree/master)
 
 ## Overview
 
