@@ -1,7 +1,7 @@
 {
   "name": "xander",
-  "version": "3.1.0",
-  "description": "Redux with waitFor.",
+  "version": "1.0.0",
+  "description": "state management in js",
   "main": "./lib/index.js",
   "scripts": {
     "build": "gulp",
