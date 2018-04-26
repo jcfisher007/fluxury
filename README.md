@@ -1,6 +1,6 @@
-# fluxury
+# xander
 
-[![Circle CI](https://circleci.com/gh/formula/fluxury/tree/master.svg?style=svg)](https://circleci.com/gh/formula/fluxury/tree/master)
+[![Circle CI](https://circleci.com/gh/FormBucket/xander/tree/master.svg?style=svg)](https://circleci.com/gh/formula/xander/tree/master)
 
 ## Overview
 
@@ -20,7 +20,7 @@ Library includes:
 ## Quick start
 
 ```sh
-npm install --save fluxury
+npm install --save xander
 ```
 
 ```js
@@ -33,7 +33,7 @@ import rootStore, {
   replaceState,
   subscribe
 }
-from 'fluxury'
+from 'xander'
 
 // creates a key="A" in the root store, connected to a reducer function.
 let storeA = createStore('a', (state=0, action) => 
@@ -80,7 +80,7 @@ A store responds to actions by returning the next state.
 
 ```js
 const inc = 'inc'
-import {createStore} from 'fluxury';
+import {createStore} from 'xander';
 
 // a simple counting store
 var store = createStore( "CountStoreWithReducer", (state=0, action) => {
@@ -107,7 +107,7 @@ Optionally, you may define a store with a specification.
 
 ```js
 const inc = 'inc'
-import { createStore } from 'fluxury';
+import { createStore } from 'xander';
 
 // a simple counting store
 var countStore = createStore( "CountStoreWithSpec", {
@@ -132,7 +132,7 @@ Dispatch accepts action as object, promise, or type/data; returns promise.
 
 ```js
 // Import the dispatch function.
-var { dispatch } = require( 'fluxury' )
+var { dispatch } = require( 'xander' )
 
 // Dispatch action as object
 dispatch( { type: 'openPath', '/user/new' } )
