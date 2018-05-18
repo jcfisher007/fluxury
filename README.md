@@ -8,7 +8,7 @@ State management library; works like redux but with option for many stores, side
 
 Library includes:
 
-  - createStore(name, reducerOrSpec, actionsOrSelectors)
+  - createStore(key, reducerOrSpec, actionsOrSelectors)
   - dispatch(action)
   - getStores()
   - getReducer()
@@ -24,7 +24,7 @@ npm install --save xander
 ```
 
 ```js
-import rootStore, {
+import {
   createStore,
   dispatch,
   getStores,
@@ -36,16 +36,16 @@ import rootStore, {
 from 'xander'
 
 // creates a key="A" in the root store, connected to a reducer function.
-let storeA = createStore('a', (state=0, action) => 
+let storeA = createStore('a1', (state=0, action) => 
                       action.type === 'setA' ? 
                       action.data : state )
 
-let storeB = createStore('b', (state=0, action) => 
+let storeB = createStore('b1', (state=0, action) => 
                       action.type === 'setB' ? 
                       action.data : state )
 
 // Store with dependencies on state in storeA and storeB.
-let storeC = createStore('c', (state=0, action, waitFor) => {
+let storeC = createStore('c1', (state=0, action, waitFor) => {
   // Ensure storeA and storeB reducers run prior to continuing.
   waitFor([storeA.dispatchToken, storeB.dispatchToken]);
   
@@ -53,10 +53,10 @@ let storeC = createStore('c', (state=0, action, waitFor) => {
   return storeA.getState() + storeB.getState();
 })
 
-rootStore.subscribe((...args) => console.log('action', ...args))
-rootStore.dispatch('setA', 2)
-rootStore.dispatch('setB', 2)
-rootStore.getState()  // -> { a: 2, b: 2, c: 4 }
+subscribe((...args) => console.log('action', ...args))
+dispatch('setA', 2)
+dispatch('setB', 2)
+getState()  // -> { a1: 2, b1: 2, c1: 4 }
 ```
 
 ## Polyfills
@@ -74,7 +74,7 @@ require('core-js/fn/object/keys');
 
 ## API
 
-### createStore( name, reducerOrSpec, actionsOrSelectors )
+### createStore( key, reducerOrSpec, actionsOrSelectors )
 
 A store responds to actions by returning the next state.
 
@@ -83,7 +83,7 @@ const inc = 'inc'
 import {createStore} from 'xander';
 
 // a simple counting store
-var store = createStore( "CountStoreWithReducer", (state=0, action) => {
+var store = createStore( "count", (state=0, action) => {
   switch (action.type)
   case inc:
     return state + 1;
@@ -110,7 +110,7 @@ const inc = 'inc'
 import { createStore } from 'xander';
 
 // a simple counting store
-var countStore = createStore( "CountStoreWithSpec", {
+var countStore = createStore( "count", {
   // life-cycle method for initialization.
   getInitialState: () => 0,
   // handles { type: 'inc' }

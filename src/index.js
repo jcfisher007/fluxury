@@ -290,12 +290,3 @@ export function createStore(name, reducerOrSpec, selectors = {}) {
 
   return store;
 }
-
-let rootStore = {
-  dispatch,
-  replaceState,
-  subscribe,
-  getState
-};
-
-export default rootStore;

@@ -6,12 +6,10 @@ var createStore = pf.createStore;
 var dispatch = pf.dispatch;
 var replaceState = pf.replaceState;
 var subscribe = pf.subscribe;
-let rootStore = pf.default;
 test("Basic Tests", function*(t) {
-  t.plan(20);
+  t.plan(19);
 
   t.equal(typeof pf, "object");
-  t.equal(typeof rootStore, "object");
   t.equal(typeof pf.createStore, "function");
   t.equal(typeof pf.dispatch, "function");
 
@@ -53,7 +51,7 @@ test("Basic Tests", function*(t) {
   t.deepEqual(store.getState(), { foo: 1, bar: 2 });
   t.equal(store.getFoo(), 1);
   t.equal(store.getBar(), 2);
-  rootStore.dispatch(set, { foo: 2 });
+  dispatch(set, { foo: 2 });
   t.deepEqual(store.getState(), { foo: 2, bar: 2 });
   pf.dispatch(set, { hey: ["ho", "let's", "go"] });
   t.deepEqual(store.getState(), { foo: 2, bar: 2, hey: ["ho", "let's", "go"] });
@@ -263,7 +261,6 @@ test("waitFor and events works correctly", function*(t) {
   t.equal(dispatchCount2, 1);
 
   unsubscribe();
-
   var result = yield dispatch(
     Promise.resolve({ type: "loadMessage", data: "Test3" })
   );
@@ -281,7 +278,7 @@ test("check root store", function*(t) {
 
   var count = 0;
 
-  var rootListener = rootStore.subscribe(() => count++);
+  var rootListener = subscribe(() => count++);
   dispatch("no-action-here", "Test3");
 
   t.equal(count, 0);
@@ -291,13 +288,15 @@ test("check root store", function*(t) {
 
   t.equal(count, 1);
 
+  let rootState;
+
   // try to modify/replace state
   var modifiedState = Object.assign({}, rootState);
   delete modifiedState.master;
 
   replaceState(modifiedState);
 
-  let rootState = getState();
+  rootState = getState();
   t.equal(Object.keys(rootState).length, Object.keys(modifiedState).length);
 
   yield dispatch("no-handler-action-here", "Test3");
