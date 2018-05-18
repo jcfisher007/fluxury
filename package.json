@@ -4,11 +4,12 @@
   "description": "state management in js",
   "main": "./lib/index.js",
   "scripts": {
-    "build": "npx rollup --format=umd --name=xander src/index.js | npx buble | npx uglifyjs > lib/index.js",
+    "build":
+      "npx rollup --format=umd --name=xander src/index.js | npx buble | npx uglifyjs > lib/index.js",
     "test": "npx nodent test.js"
   },
   "engines": {
-    "node": ">=6.0"
+    "node": ">=8.0"
   },
   "author": "JC Fisher",
   "license": "MIT",
@@ -25,11 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/FormBucket/xander.git"
   },
-  "keywords": [
-    "react",
-    "react-component",
-    "flux"
-  ],
+  "keywords": ["react", "react-component", "flux"],
   "bugs": {
     "url": "https://github.com/FormBucket/xander/issues"
   },
