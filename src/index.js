@@ -1,4 +1,4 @@
-/* xander - Copyright 2015-2018 FormBucket.com */
+/* fluxury - Copyright 2015-2018 JC Fisher */
 "use strict";
 
 // Based on Facebook's Flux dispatcher class.

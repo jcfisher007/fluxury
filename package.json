@@ -1,11 +1,10 @@
 {
-  "name": "xander",
-  "version": "2.0.0",
+  "name": "fluxury",
+  "version": "4.0.0",
   "description": "state management in js",
   "main": "./lib/index.js",
   "scripts": {
-    "build":
-      "npx rollup --format=umd --name=xander src/index.js | npx buble | npx uglifyjs > lib/index.js",
+    "build": "npx rollup --format=umd --name=fluxury src/index.js | npx buble | npx uglifyjs > lib/index.js",
     "test": "npx nodent test.js"
   },
   "engines": {
@@ -24,11 +23,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FormBucket/xander.git"
+    "url": "git+https://github.com/jcfisher007/fluxury.git"
   },
-  "keywords": ["react", "react-component", "flux"],
+  "keywords": [
+    "react",
+    "react-component",
+    "flux"
+  ],
   "bugs": {
-    "url": "https://github.com/FormBucket/xander/issues"
+    "url": "https://github.com/jcfisher007/fluxury/issues"
   },
-  "homepage": "https://github.com/FormBucket/xander#readme"
+  "homepage": "https://github.com/jcfisher007/fluxury#readme"
 }
